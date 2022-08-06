@@ -1,0 +1,41 @@
+
+<view   class="head"    >
+<view  class="head_image" bindtap="isnologin"  >
+<image src="https://w.wallhaven.cc/full/dp/wallhaven-dp15dj.jpg"/>
+<view     >朱大哥</view>
+</view>
+</view>
+<view   style="margin-top: 0px;" class="cu-list menu sm-border card-menu margin-top">
+    <view class="cu-item arrow">
+      <view class="content">
+        <text class="cuIcon-writefill text-grey"></text>
+        <text class="text-grey">修改我的信息</text>
+      </view>
+    </view>
+    <view class="cu-item arrow"> 
+      <view class="content">
+        <text class="cuIcon-appreciatefill text-grey"></text>
+        <text class="text-grey">我的点赞</text>
+      </view>
+    </view>
+    <view class="cu-item arrow">
+      <view class="content">
+        <text class="cuIcon-formfill text-grey"></text>
+        <text class="text-grey">我的帖子</text>
+      </view>
+    </view>
+    <view class="cu-item arrow">
+      <button class="cu-btn content" open-type="contact">
+        <text class="cuIcon-commentfill text-olive"></text>
+        <text class="text-grey">回复我的</text>
+      </button>
+    </view>
+    <view class="cu-item arrow">
+      <navigator class="content" hover-class="none" url="../list/list" open-type="redirect">
+        <text class="cuIcon-discoverfill text-orange"></text>
+        <text class="text-grey">Navigator 跳转</text>
+      </navigator>
+    </view>
+    </view>
+
+

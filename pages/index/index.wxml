@@ -1,0 +1,35 @@
+
+<view style="margin-left:0 5px ;" class="cu-bar search">
+  
+    <view style="background-color:white ;" class="search-form round">
+      <text class="cuIcon-search"></text>
+      <input type="text" placeholder="搜索图片、文章、视频" confirm-type="search"></input>
+    </view>
+   </view>
+   <view style="width: 100%; height: 2rpx; background-color: #E0E3DA;"  ></view>
+   <scroll-view  style="background-color: #f1f1f1;" scroll-x  class="bg-white nav" scroll-with-animation scroll-left="{{scrollLeft}}">
+  <view class="cu-item {{index==TabCur?'text-mauve cur':''}}" wx:for="{{list}}" wx:key bindtap="tabSelect" data-id="{{index}}">
+    {{item.text}}
+  </view>
+</scroll-view>
+<view wx:for="{{issue}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:90%; padding: 18rpx; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.headimage}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;"  >
+<view style="font-size: 1rem;box-sizing: border-box; margin-bottom: 5px; margin-top: 2px;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.time}}</view>
+</view>
+</view>
+<view  style="box-sizing: border-box; margin-bottom: 10px; "  >
+{{item.text}}
+</view>
+<view style="display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image  mode="aspectFill"  src="{{item.images[0]}}"     ></image>
+</view>
+<view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" style="height: 50rpx; width: 50rpx;" wx:if="{{item.islike}}" src="../../icon/点赞 (1).png"  />
+<image  data-index="{{index}}" bindtap="like" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.islike}}" src="../../icon/点赞.png"  />
+</view>
+</view>
+<view style="height: 150px; width: 100%;  bottom: 0px;"  ></view>
