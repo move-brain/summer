@@ -1,35 +1,339 @@
 
-<view style="margin-left:0 5px ;" class="cu-bar search">
-  
-    <view style="background-color:white ;" class="search-form round">
+<view wx:if="{{showsearch}}"  style="height: 14vmin; margin-left:0 5px;" class="cu-bar search">
+    <view bindtap="search" style="background-color:white ;" class="search-form round">
       <text class="cuIcon-search"></text>
-      <input type="text" placeholder="搜索图片、文章、视频" confirm-type="search"></input>
+      <view type="text" style="color: #bbb;" confirm-type="search">搜索发现</view>
     </view>
    </view>
-   <view style="width: 100%; height: 2rpx; background-color: #E0E3DA;"  ></view>
-   <scroll-view  style="background-color: #f1f1f1;" scroll-x  class="bg-white nav" scroll-with-animation scroll-left="{{scrollLeft}}">
-  <view class="cu-item {{index==TabCur?'text-mauve cur':''}}" wx:for="{{list}}" wx:key bindtap="tabSelect" data-id="{{index}}">
-    {{item.text}}
-  </view>
+   <view style="width: 100%; height: 0.3vmin; background-color: #E0E3DA; box-sizing: border-box ;margin-bottom:12vmin;"  ></view>
+
+<swiper current="{{TabCur}}" duration="300" 	circular="true"   bindchange="tapChange" style="width: 100%;height:100vmax"  >
+<swiper-item  style="height: 100%; width: 100%;">
+<scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:for="{{posts[0]}}" wx:key="index" data-id="{{item.id}}" bindtap="look_posts" style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image catchtap="look_user" style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view  style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
+</view>
+</view>
+<view style=" line-height:140%; font-weight: bold;height:40rpx; font-size: 36rpx; display: flex;align-items: center;box-sizing: border-box;margin-bottom: 1vmin; "  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; " >
+{{item.post_text}}
+</view>
+<view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
+<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[0][index].width}}px;height: {{imagelwh[0][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
+<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+</view>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
+    <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
+<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+</view>
+</view>
+</view>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[0][index].width}};height:{{videolwh[0][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
+</view>
+<view catchtap style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+</view>
 </scroll-view>
-<view wx:for="{{issue}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:90%; padding: 18rpx; background-color: white; box-sizing: border-box; margin:10px auto;" >
-<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
-<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.headimage}}"/>
-<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;"  >
-<view style="font-size: 1rem;box-sizing: border-box; margin-bottom: 5px; margin-top: 2px;"   >姜老头</view>
-<view style="font-size: 10px; color: E1E1E1;"  >{{item.time}}</view>
+</swiper-item>
+
+<swiper-item >
+  <scroll-view  bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:if="{{se_tabcur[1]}}" wx:for="{{posts[1]}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
 </view>
 </view>
-<view  style="box-sizing: border-box; margin-bottom: 10px; "  >
-{{item.text}}
+<view style="font-weight: bold;height:40rpx; font-size: 18px; display: flex;align-items: center; box-sizing: border-box;margin-bottom: 1vmin; "  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; "  >
+{{item.post_text}}
 </view>
-<view style="display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image  mode="aspectFill"  src="{{item.images[0]}}"     ></image>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo" data-index="{{index}}" style=" border-radius: 20px;width:{{videolwh[1][index].width}};height:{{videolwh[1][index].height}}px; " object-fit="cover" data-tacur="{{TabCur}}" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
-<image data-index="{{index}}" bindtap="like" style="height: 50rpx; width: 50rpx;" wx:if="{{item.islike}}" src="../../icon/点赞 (1).png"  />
-<image  data-index="{{index}}" bindtap="like" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.islike}}" src="../../icon/点赞.png"  />
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+  </view>
+</scroll-view>
+</swiper-item>
+<swiper-item>
+    <scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:if="{{se_tabcur[2]}}" wx:for="{{posts[2]}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
 </view>
 </view>
-<view style="height: 150px; width: 100%;  bottom: 0px;"  ></view>
+<view style="font-weight: bold;height:40rpx; font-size: 18px; display: flex;align-items: center; box-sizing: border-box; margin-bottom: 1vmin;"  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; "  >
+{{item.post_text}}
+</view>
+<view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
+<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[2][index].width}}px;height: {{imagelwh[2][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
+<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+</view>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
+    <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
+<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+</view>
+</view>
+</view>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[2][index].width}};height:{{videolwh[2][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
+</view>
+<view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+</view>
+</scroll-view>
+
+</swiper-item>
+<swiper-item><scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:if="{{se_tabcur[3]}}" wx:for="{{posts[3]}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
+</view>
+</view>
+<view style="font-weight: bold;height:40rpx; font-size: 18px; display: flex;align-items: center;box-sizing: border-box;margin-bottom: 1vmin; "  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; "  >
+{{item.post_text}}
+</view>
+<view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
+<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[3][index].width}}px;height: {{imagelwh[3][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
+<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+</view>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
+    <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
+<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+</view>
+</view>
+</view>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[3][index].width}};height:{{videolwh[3][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
+</view>
+<view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+</view>
+</scroll-view></swiper-item>
+<swiper-item><scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:if="{{se_tabcur[4]}}" wx:for="{{posts[4]}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
+</view>
+</view>
+<view style="font-weight: bold;height:40rpx; font-size: 18px; display: flex;align-items: center; box-sizing: border-box; margin-bottom: 1vmin;"  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; "  >
+{{item.post_text}}
+</view>
+<view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
+<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[4][index].width}}px;height: {{imagelwh[4][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
+<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+</view>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
+    <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
+<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+</view>
+</view>
+</view>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[4][index].width}};height:{{videolwh[4][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
+</view>
+<view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+</view>
+</scroll-view></swiper-item>
+<swiper-item>
+    <scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:if="{{se_tabcur[5]}}" wx:for="{{posts[5]}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
+</view>
+</view>
+<view style="font-weight: bold;height:40rpx; font-size: 18px; display: flex;align-items: center; box-sizing: border-box; margin-bottom: 1vmin;"  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; "  >
+{{item.post_text}}
+</view>
+<view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
+<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[5][index].width}}px;height: {{imagelwh[5][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
+<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+</view>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
+    <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
+<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+</view>
+</view>
+</view>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[5][index].width}};height:{{videolwh[5][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
+</view>
+<view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+</view>
+</scroll-view>
+</swiper-item>
+<swiper-item><scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
+  <view wx:if="{{se_tabcur[6]}}" wx:for="{{posts[6]}}" wx:key="index"  style="height: auto; display: flex;flex-direction: column; border-radius: 5px; width:95%; padding: 2.5%; background-color: white; box-sizing: border-box; margin:10px auto;" >
+<view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
+<image style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
+<view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
+<view style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
+<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
+</view>
+</view>
+<view style="font-weight: bold;height:40rpx; font-size: 18px; display: flex;align-items: center; box-sizing: border-box;margin-bottom: 1vmin; "  >{{item.post_title}}</view>
+<view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; "  >
+{{item.post_text}}
+</view>
+<view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
+<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[6][index].width}}px;height: {{imagelwh[6][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
+<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+</view>
+</view>
+<view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
+    <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
+<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+</view>
+</view>
+</view>
+<view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
+<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[6][index].width}};height:{{videolwh[6][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+</view>
+<view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
+<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
+<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+</view>
+</view>
+</view>
+<view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
+<image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
+<image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+</view>
+</view>
+</scroll-view></swiper-item>
+
+</swiper>
+<scroll-view  style=" height:12vmin ;  background-color: #f1f1f1; {{!showsearch? 'position:fixed;top:2rpx;':'position:fixed;top:14.3vmin;'}} " scroll-x  class="bg-white nav" scroll-with-animation scroll-left="{{scrollLeft}}">
+  <view class="cu-item {{index==TabCur?'text-mauve cur':''}}" wx:for="{{list}}" wx:key="index" bindtap="tabSelect" data-id="{{index}}">
+    {{item.text}}
+  </view>
+</scroll-view>

@@ -1,6 +1,11 @@
 {
     "pages": [
         "pages/index/index",
+        "pages/select/select",
+        "pages/search/search",
+        "pages/posts/posts",
+        "pages/issue_im/issue_im",
+        "pages/br_com/br_com",
         "pages/issue/issue",
         "pages/my/my",
         "pages/logs/logs"
@@ -23,6 +28,9 @@
             "pagePath": "pages/my/my",
             "text": "text1"
         }]
+    },
+    "useExtendedLib": {
+        "weui": true
     },
     "usingComponents": {},
     "style": "v2",

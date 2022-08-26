@@ -1,0 +1,42 @@
+<view  style="width: 100%; height: auto; box-sizing: border-box; margin-top: 2vmin;" >
+  <view  style="width:100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 10vmin; box-sizing: border-box; "  >
+<image catchtap="look_user" style="height: 10vmin; width: 10vmin; border-radius: 100px;" src="{{com.head}}"/>
+<view style="box-sizing: border-box;margin:0 2.5vmin; height:80%;display: flex;flex-direction: column;justify-content: space-around"  >
+<view  style="box-sizing: border-box;"   >{{com.name}}</view>
+<view style=" font-size: 22rpx; color: #d1d1d1;"  >{{com.com_time}}</view>
+</view>
+</view>
+<view style="width: 82.5vmin; box-sizing: border-box; margin-top: 2vmin; margin-left: 12.5vmin; word-wrap: break-word;line-height:140%;" >
+{{com.text}}
+</view>
+<view wx:if="{{com.image.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 3vmin; margin-left: 12.5vmin;margin-top: 2vmin; " >
+    <image bindload="main_image" wx:if="{{com.image[0]}}" style=" border-radius: 8px; width: {{imagelwh.width}}px;height: {{imagelwh.height}}px;" src="{{com.image[0]}}" mode="aspectFill" ></image>
+</view>
+</view>
+<view style="height: 1.5vmin;width: 100%;background-color: #f1f1f1; box-sizing: border-box;margin-top: 2vmin;"  >
+</view>
+<view style="width: 95%;margin: auto; box-sizing: border-box;padding: 3vmin 0px; height: auto; margin-bottom: 5vmin;font-size: 4vmin; font-weight: 600;"  >
+最新回复
+</view>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<view style=" position: fixed;bottom: {{ keyboard_hei}}px; display: flex;justify-content: flex-start; align-items: center; height: 15vmin;width: 100%; box-sizing: border-box;padding: 2.5vmin 3vmin  2.5vmin 5vmin ; border-top: 2rpx solid; border-color: #f1f1f1;  "  >
+<input 	bindfocus="focus" bindinput="br_text" bindblur="blur" style="background-color: #f1f1f1; border-radius: 8px;  height: 10vmin;width: 73%;box-sizing: border-box;padding: 2vmin 4vmin;  "    />
+<!-- <button   style="width: 18vmin;height: 10vmin;box-sizing: border-box;margin-left: 5vmin; font-size: 4vmin;" size="mini"   >发送</button> -->
+<button bindtap="issue_br" style="width: 20vmin; padding:1.5vmin 4vmin; box-sizing: border-box; margin: 0px;margin-left: 5vmin;" class="cu-btn round bg-mauve ">圆角</button>
+
+</view>

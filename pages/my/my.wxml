@@ -1,8 +1,7 @@
-
 <view   class="head"    >
 <view  class="head_image" bindtap="isnologin"  >
-<image src="https://w.wallhaven.cc/full/dp/wallhaven-dp15dj.jpg"/>
-<view     >朱大哥</view>
+<image src="{{headimage}}"/>
+<view     >{{name}}</view>
 </view>
 </view>
 <view   style="margin-top: 0px;" class="cu-list menu sm-border card-menu margin-top">
@@ -33,7 +32,7 @@
     <view class="cu-item arrow">
       <navigator class="content" hover-class="none" url="../list/list" open-type="redirect">
         <text class="cuIcon-discoverfill text-orange"></text>
-        <text class="text-grey">Navigator 跳转</text>
+        <text class="text-grey"></text>
       </navigator>
     </view>
     </view>
