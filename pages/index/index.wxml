@@ -1,12 +1,11 @@
 
-<view wx:if="{{showsearch}}"  style="height: 14vmin; margin-left:0 5px;" class="cu-bar search">
+<view wx:if="{{showsearch}}"  style="height: 14vmin; margin-left:0 2vmin;" class="cu-bar search">
     <view bindtap="search" style="background-color:white ;" class="search-form round">
       <text class="cuIcon-search"></text>
       <view type="text" style="color: #bbb;" confirm-type="search">搜索发现</view>
     </view>
    </view>
    <view style="width: 100%; height: 0.3vmin; background-color: #E0E3DA; box-sizing: border-box ;margin-bottom:12vmin;"  ></view>
-
 <swiper current="{{TabCur}}" duration="300" 	circular="true"   bindchange="tapChange" style="width: 100%;height:100vmax"  >
 <swiper-item  style="height: 100%; width: 100%;">
 <scroll-view 	lower-threshold="{{winheight-100}}px" bindscroll="hdsearch" scroll-y="true" style="width: 100%;height: {{winheight?winheight+'px':'auto'}};" >
@@ -14,9 +13,10 @@
 <view  style="width: 100%; display: flex;align-items: flex-start;justify-content: flex-start;align-items: center; height: 41px; box-sizing: border-box; margin:10px 0 ; "  >
 <image catchtap="look_user" style="height: 85rpx; width: 85rpx; border-radius: 100px;" src="{{item.head}}"/>
 <view style="box-sizing: border-box;margin:0 10px; height: 85rpx;display: flex;flex-direction: column;justify-content: space-around"  >
-<view  style="font-size: 1rem;box-sizing: border-box;"   >姜老头</view>
-<view style="font-size: 10px; color: E1E1E1;"  >{{item.post_time}}</view>
+<view  style="font-size: 1rem;box-sizing: border-box;"   >{{item.name}}</view>
+<view style="font-size: 20rpx; color: E1E1E1;"  >{{item.post_time}}</view>
 </view>
+<image catchtap="de_post" data-index="{{index}}" style="height: 4vmin;width:4vmin; box-sizing: border-box;margin-left: 45vmin;margin-bottom: 6vmin;" src="../../icon/叉.png"/>
 </view>
 <view style=" line-height:140%; font-weight: bold;height:40rpx; font-size: 36rpx; display: flex;align-items: center;box-sizing: border-box;margin-bottom: 1vmin; "  >{{item.post_title}}</view>
 <view  style=" word-wrap: break-word;line-height:140%; display: -webkit-box; -webkit-box-orient: vertical;-webkit-line-clamp:3; overflow: hidden; box-sizing: border-box;height: auto; width:100%; margin-bottom: 10px; " >
@@ -24,35 +24,41 @@
 </view>
 <view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
 <view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[0][index].width}}px;height: {{imagelwh[0][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+    <image bindload="animage" catchtap="lookimage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[TabCur][index].width}}px;height: {{imagelwh[TabCur][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}" data-index_image="0"  ></image>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
-<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<image  catchtap="lookimage" wx:if="{{item}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
 </view>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
     <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
-<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
-<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
-<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index_image"  wx:for-index="index_image"  >
+<image catchtap="lookimage" wx:if="{{index_image<3&&image}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index_image==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
 </view>
 </view>
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
 <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[0][index].width}};height:{{videolwh[0][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view catchtap style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >{{item.like_num}}</view>
+</view>
+
+</view>
 </view>
 </view>
 </scroll-view>
@@ -73,19 +79,22 @@
 {{item.post_text}}
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
-<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo" data-index="{{index}}" style=" border-radius: 20px;width:{{videolwh[1][index].width}};height:{{videolwh[1][index].height}}px; " object-fit="cover" data-tacur="{{TabCur}}" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >200</view>
+</view>
 </view>
   </view>
 </scroll-view>
@@ -105,36 +114,39 @@
 {{item.post_text}}
 </view>
 <view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
-<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[2][index].width}}px;height: {{imagelwh[2][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+    <view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" catchtap="lookimage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[TabCur][index].width}}px;height: {{imagelwh[TabCur][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}" data-index_image="0"  ></image>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
-<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<image  catchtap="lookimage" wx:if="{{item}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
 </view>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
     <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
-<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
-<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
-<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index_image"  wx:for-index="index_image"  >
+<image catchtap="lookimage" wx:if="{{index_image<3&&image}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index_image==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
 </view>
 </view>
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
-<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[2][index].width}};height:{{videolwh[2][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >200</view>
+</view>
 </view>
 </view>
 </scroll-view>
@@ -154,36 +166,39 @@
 {{item.post_text}}
 </view>
 <view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
-<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[3][index].width}}px;height: {{imagelwh[3][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+    <view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" catchtap="lookimage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[TabCur][index].width}}px;height: {{imagelwh[TabCur][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}" data-index_image="0"  ></image>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
-<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<image  catchtap="lookimage" wx:if="{{item}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
 </view>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
     <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
-<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
-<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
-<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index_image"  wx:for-index="index_image"  >
+<image catchtap="lookimage" wx:if="{{index_image<3&&image}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index_image==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
 </view>
 </view>
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
-<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[3][index].width}};height:{{videolwh[3][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >200</view>
+</view>
 </view>
 </view>
 </scroll-view></swiper-item>
@@ -201,36 +216,39 @@
 {{item.post_text}}
 </view>
 <view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
-<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[4][index].width}}px;height: {{imagelwh[4][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+    <view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" catchtap="lookimage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[TabCur][index].width}}px;height: {{imagelwh[TabCur][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}" data-index_image="0"  ></image>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
-<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<image  catchtap="lookimage" wx:if="{{item}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
 </view>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
     <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
-<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
-<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
-<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index_image"  wx:for-index="index_image"  >
+<image catchtap="lookimage" wx:if="{{index_image<3&&image}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index_image==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
 </view>
 </view>
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
-<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[4][index].width}};height:{{videolwh[4][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >200</view>
+</view>
 </view>
 </view>
 </scroll-view></swiper-item>
@@ -249,36 +267,39 @@
 {{item.post_text}}
 </view>
 <view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
-<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[5][index].width}}px;height: {{imagelwh[5][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+    <view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" catchtap="lookimage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[TabCur][index].width}}px;height: {{imagelwh[TabCur][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}" data-index_image="0"  ></image>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
-<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<image  catchtap="lookimage" wx:if="{{item}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
 </view>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
     <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
-<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
-<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
-<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index_image"  wx:for-index="index_image"  >
+<image catchtap="lookimage" wx:if="{{index_image<3&&image}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index_image==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
 </view>
 </view>
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
-<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[5][index].width}};height:{{videolwh[5][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >200</view>
+</view>
 </view>
 </view>
 </scroll-view>
@@ -297,36 +318,39 @@
 {{item.post_text}}
 </view>
 <view wx:if="{{item.type=='url_image'}}" style="width: 100%; height: auto;"  >
-<view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <image bindload="animage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[6][index].width}}px;height: {{imagelwh[6][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}"  ></image>
+    <view wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <image bindload="animage" catchtap="lookimage" wx:if="{{item.images[0]}}" style=" border-radius: 20px; width: {{imagelwh[TabCur][index].width}}px;height: {{imagelwh[TabCur][index].height}}px;" src="{{item.images[0]}}" mode="aspectFill" data-index="{{index}}" data-index_image="0"  ></image>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="{{index}}" >
-<image wx:if="{{item}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<image  catchtap="lookimage" wx:if="{{item}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{item}}"/>
 </view>
 </view>
 <view style="  position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>3}}">
     <view   style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+{{item.length}}</view>
-<view  style=" position:relative; box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index" >
-<image wx:if="{{index<3&&image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
-<view wx:if="{{index==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
+<view  style=" position:relative; box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:for-item="image" wx:key="index_image"  wx:for-index="index_image"  >
+<image catchtap="lookimage" wx:if="{{index_image<3&&image}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" mode="aspectFill" src="{{image}}"/>
+<view wx:if="{{index_image==2}}"  style=" display: flex;justify-content: center;align-items: center; background-color: #333; position:absolute;opacity: 0.5; height: {{winwidth/15}}px;width: {{winwidth/15}}px; bottom: 8px;right: 8px;color:white ;font-size: {{winwidth/35}}px; border-radius: 100%;" >+ {{item.images.length-3}}</view>
 </view>
 </view>
 </view>
 <view wx:if="{{item.type=='url_videos'}}" style="width: 100%; height: auto;"  >
-<view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
-    <video wx:if="{{item.images[0]}}" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[6][index].width}};height:{{videolwh[6][index].height}}px; " object-fit="cover" src="{{item.images[0]}}"data-index="{{index}}" ></video>
+    <view  wx:if="{{item.images.length==1}}"  style=" display: flex; box-sizing: border-box; margin-bottom: 10px; " >
+    <video wx:if="{{item.images[0]}}" 	show-mute-btn="true" catchtap="lookimage" custom-cache="{{false}}" bindloadedmetadata="anvideo"  style=" border-radius: 20px;width:{{videolwh[TabCur][index].width}};height:{{videolwh[TabCur][index].height}}px; " object-fit="cover" src="{{item.images[0]}}" data-index="{{index}}" data-index_image="0" ></video>
 </view>
 <view  style="position:relative; margin-bottom: 10px; box-sizing: border-box; width: 100%;height:{{winwidth/3.5}}px ; display: flex; flex-wrap: wrap;   " wx:if="{{item.images.length>1&&item.images.length<=3}}">
-<view  style=" box-sizing: border-box; margin:0px {{index==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index" >
-<video wx:if="{{item}}" custom-cache="{{false}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
+<view  style=" box-sizing: border-box; margin:0px {{index_image==1? winwidth/48:0 }}px; display: flex;justify-content: center;align-items: center;  width: {{winwidth/3.5}}px;height: {{winwidth/3.5}}px;justify-content: space-around; "  wx:for="{{item.images}}" wx:key="index_image" wx:for-index="index_image"  >
+<video wx:if="{{item}}" catchtap="lookimage" custom-cache="{{false}}" data-index="{{index}}" data-index_image="{{index_image}}" style=" border-radius:10px; width: 100%;height: 100%;" object-fit="cover" src="{{item}}"></video>
 </view>
 </view>
 </view>
 <view  style="height: 50rpx; width: 100%;display: flex;align-items:center; justify-content:space-around; " >
 <image style="height: 40rpx; width: 40rpx;" src="../../icon/回复.png"/>
+<view style="display: flex;justify-content: flex-start;"  >
 <image data-index="{{index}}" bindtap="like" data-islike="true" style="height: 50rpx; width: 50rpx;" wx:if="{{item.is_like}}" src="../../icon/点赞.png"  />
 <image   data-index="{{index}}" bindtap="like" data-islike="false" style="height: 50rpx; width: 50rpx;" wx:if="{{!item.is_like}}" src="../../icon/点赞 (1).png"  />
+<view  style="width: 8vmin;height: 50rpx; box-sizing: border-box;display: flex;justify-content: center;align-items: flex-end; margin-left: 2vmin;margin-top: 0.5vmin; "  >200</view>
+</view>
 </view>
 </view>
 </scroll-view></swiper-item>

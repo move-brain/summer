@@ -13,6 +13,23 @@ Page({
         name: "未登录"
 
     },
+    like_collect(e) {
+        console.log(e);
+        var type = e.currentTarget.dataset.type
+        wx.navigateTo({
+            url: '../like_collect/like_collect?type=' + type,
+        })
+    },
+    my_post(e) {
+        wx.navigateTo({
+            url: '../my_post/my_post',
+        })
+    },
+    mod_my(e) {
+        wx.navigateTo({
+            url: '../mod_my/mod_my',
+        })
+    },
     isnologin(res) {
         return new Promise((resolve, reject) => {
             var name = this.data.name

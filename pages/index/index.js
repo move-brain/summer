@@ -2,7 +2,7 @@
 
 
 
-
+const { time } = require("../../request")
 const { getrequest } = require("../../request");
 // 获取应用实例
 const app = getApp()
@@ -24,8 +24,36 @@ Page({
         videolist: [],
         winheight: 0,
         se_tabcur: [],
-        showsearch: true
+        showsearch: true,
+        posts_data: []
     },
+    lookimage(e) {
+        var posts = this.data.posts
+        var TabCur = this.data.TabCur
+        var index = e.currentTarget.dataset.index
+        var index_image = e.currentTarget.dataset.index_image
+        if (posts[TabCur][index].type == 'url_image') {
+            var sources = [{
+                url: posts[TabCur][index].images[index_image],
+                type: 'image'
+            }]
+        } else {
+            var sources = [{
+                url: posts[TabCur][index].images[index_image],
+                type: 'video'
+            }]
+        }
+
+        wx.previewMedia({
+            sources: sources,
+            success(e) {
+                console.log(e);
+            }
+        })
+    },
+
+
+
     animage(e) {
 
 
@@ -129,15 +157,19 @@ Page({
                         } else {
                             var type = list[TabCur].text
                         }
+                        var posts_data = this.data.posts_data
+                        posts_data[TabCur] = posts_data[TabCur]
                         getrequest(host + '/wx_posts/sp_posts', {
                             type,
                             islogin,
-                            openid
+                            openid,
+                            posts_data: posts_data[TabCur]
                         }).then(res => {
                             posts[TabCur] = res.data
                             var se_tabcur = this.data.se_tabcur
                             se_tabcur[TabCur] = true
                             this.setData({
+                                posts_data,
                                 se_tabcur,
                                 posts
                             })
@@ -205,6 +237,7 @@ Page({
     look_posts(e) {
         console.log(e);
         var id = e.currentTarget.dataset.id
+        console.log(id);
         wx.navigateTo({
             url: '../posts/posts?post_id=' + id,
         })
@@ -218,8 +251,9 @@ Page({
         var index = e.currentTarget.dataset.index
         var islike = e.currentTarget.dataset.islike
         var TabCur = this.data.TabCur
+        var openid = wx.getStorageSync('openid')
         getrequest(host + '/wx_post/islike', {
-            user_id: posts[TabCur][index].user_id,
+            openid,
             post_id: posts[TabCur][index].id,
             islike
         }).then(res => {
@@ -241,6 +275,17 @@ Page({
             }
         })
     },
+    de_post(e) {
+        var posts = this.data.posts
+        console.log(e);
+        var index = e.currentTarget.dataset.index
+        var TabCur = this.data.TabCur
+        posts[TabCur].splice(index, 1)
+        console.log(posts);
+        this.setData({
+            posts: posts
+        })
+    },
     /**
      * 生命周期函数--监听页面显示
      */
@@ -258,9 +303,11 @@ Page({
         var imagelwh = this.data.imagelwh
         posts[7] = {}
         console.log(app.userlogin.islogin);
+        var posts_data = this.data.posts_data
         for (var i = 0; i < 8; i++) {
             videolwh[i] = []
             imagelwh[i] = []
+            posts_data[i] = 0
         }
         this.setData({
             posts,
@@ -274,10 +321,12 @@ Page({
             })
             var openid = wx.getStorageSync('openid')
             console.log(openid);
+            var posts_data = this.data.posts_data
             if (openid == ' ') {
                 console.log(openid);
                 getrequest(host + '/wx_post/get_allpost', {
-                    islogin: false
+                    islogin: false,
+                    posts_data: posts_data[0]
                 }).then(res => {
                     if (res.statusCode == 200) {
                         var posts = this.data.posts
@@ -293,7 +342,8 @@ Page({
                         console.log(88888);
                         getrequest(host + '/wx_post/get_allpost', {
                             openid,
-                            islogin: true
+                            islogin: true,
+                            posts_data: posts_data[0]
                         }).then(res => {
                             if (res.statusCode == 200) {
                                 var posts = this.data.posts
@@ -306,7 +356,8 @@ Page({
                     },
                     fail: (err) => {
                         getrequest(host + '/wx_post/get_allpost', {
-                            islogin: false
+                            islogin: false,
+                            posts_data: posts_data[0]
                         }).then(res => {
                             if (res.statusCode == 200) {
                                 var posts = this.data.posts
@@ -327,6 +378,55 @@ Page({
             //     } else { console.log(res) }
             // })
         })
-    }
+    },
+    onReachBottom() {
+        console.log(1);
+        var TabCur = this.data.TabCur
+        var islogin = app.userlogin.islogin
+        var posts_data = this.data.posts_data
+        var posts = this.data.posts
+        var openid = wx.getStorageSync('openid')
 
+        if (TabCur == 0) {
+            posts_data[0] = Number(posts_data[0] + 20)
+            console.log(posts_data[0]);
+            getrequest(host + '/wx_post/get_allpost', {
+                islogin,
+                posts_data: posts_data[0]
+            }).then(res => {
+                if (res.statusCode == 200) {
+                    var posts = this.data.posts
+                    posts[0] = posts[0].concat(res.data)
+                    this.setData({
+                        posts,
+                        posts_data
+                    })
+                }
+
+            })
+        } else {
+            var list = this.data.list
+            posts_data[TabCur] = Number(posts_data[TabCur] + 20)
+            console.log(posts_data[TabCur]);
+            if (TabCur == 1) {
+                var type = '视频'
+            } else {
+                var type = list[TabCur].text
+            }
+            getrequest(host + '/wx_posts/sp_posts', {
+                type,
+                islogin,
+                openid,
+                posts_data: posts_data[TabCur]
+            }).then(res => {
+                posts[TabCur] = posts[TabCur].concat(res.data)
+                this.setData({
+                    posts,
+                    posts_data
+                })
+
+            })
+
+        }
+    }
 })

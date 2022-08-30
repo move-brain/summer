@@ -1,6 +1,6 @@
-const { time } = require("console");
 const { getrequest } = require("../../request");
 const host = "http://127.0.0.1:8083"
+const { time } = require("../../request")
     // pages/br_com/br_com.js
 Page({
 
@@ -10,9 +10,11 @@ Page({
     data: {
         imagelwh: {},
         com: {},
+        br_com: [],
         keyboard_hei: 0,
         text: '',
-        br_id: 0
+        br_id: 0,
+        reply_name: ''
     },
     main_image(e) {
         console.log(e);
@@ -39,6 +41,7 @@ Page({
         var main_id = this.data.com.id
         var br_id = this.data.br_id
         var text = this.data.text
+        var reply_name = this.data.reply_name
         wx.showLoading({
             title: '正在发表',
         })
@@ -46,12 +49,35 @@ Page({
             openid,
             main_id,
             br_id,
-            text
+            text,
+            reply_name
         }).then(res => {
             console.log(res);
-            var com_time = time
-            if (res.data.statusCode == 200) {
-                this.setData
+            var com_time = time(res.data.com_time)
+            if (res.statusCode == 200) {
+                wx.hideLoading()
+                var newbr_com = {
+                    main_id,
+                    br_id,
+                    name,
+                    head,
+                    text,
+                    com_time,
+                    reply_name
+                }
+                var br_com = this.data.br_com
+                br_com.unshift(newbr_com)
+                console.log(br_com);
+
+                this.setData({
+                    br_com,
+                    text: ''
+                })
+            } else {
+                wx.showToast({
+                    title: '请重试',
+                    icon: "error"
+                })
             }
         })
     },
@@ -72,17 +98,52 @@ Page({
             keyboard_hei: 0
         })
     },
+    is_reply(e) {
+        console.log(e);
+        if (e.currentTarget.dataset.is_master == "true") {
+            var name = this.data.com.name
+            this.setData({
+                br_id: 0,
+                reply_name: name,
+            })
+        } else {
+            var index = e.currentTarget.dataset.index
+            var is_master = e.currentTarget.dataset.is_master
+            var br_com = this.data.br_com
+            this.setData({
+                reply_name: br_com[index].name,
+                br_id: br_com[index].id
+            })
+        }
+    },
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
 
-        var com = options.com
+        var com = decodeURIComponent((options.com))
         com = JSON.parse(com)
         console.log(com);
+
         this.setData({
-            com
+            com,
+            reply_name: com.name
         })
+        getrequest(host + '/wx_post/get_brcom', {
+
+            id: com.id
+        }).then(res => {
+            var br_com = this.data.br_com
+            br_com = res.data
+            for (var i in br_com) {
+                br_com[i].com_time = time(br_com[i].com_time)
+            }
+            this.setData({
+                br_com: res.data
+            })
+        })
+
+
     },
 
     /**

@@ -23,9 +23,7 @@ function postrequest(url, data) {
             url: url,
             data: data,
             method: "POST",
-            header: {
-                'content-Type': 'application/json'
-            },
+
             success: function(res) {
                 resolve(res)
             },

@@ -2,12 +2,15 @@
     "pages": [
         "pages/index/index",
         "pages/select/select",
+        "pages/like_collect/like_collect",
+        "pages/my_post/my_post",
         "pages/search/search",
         "pages/posts/posts",
         "pages/issue_im/issue_im",
         "pages/br_com/br_com",
         "pages/issue/issue",
         "pages/my/my",
+        "pages/mod_my/mod_my",
         "pages/logs/logs"
     ],
     "window": {
