@@ -1,5 +1,5 @@
 function getrequest(url, data) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         wx.request({
             url: url,
             data: data,
@@ -7,10 +7,10 @@ function getrequest(url, data) {
             header: {
                 'content-Type': 'application/json'
             },
-            success: function(res) {
+            success: (res) => {
                 resolve(res)
             },
-            faill(res) {
+            faill: (res) => {
                 reject(res)
             }
         })
@@ -45,10 +45,6 @@ function timeDifference(tmpTime) {
     var tmpTimeStamp = tmpTime ? Date.parse(tmpTime.replace(/-/gi, "/")) : new Date().getTime();
     var nowTime = new Date().getTime();
     var tmpTimeDifference = nowTime - tmpTimeStamp;
-    if (tmpTimeDifference < 0) {
-        alert("开始日期大于结束日期，计算失败！");
-        return 0;
-    }
     var DifferebceMonth = tmpTimeDifference / month;
     var DifferebceWeek = tmpTimeDifference / (7 * day);
     var DifferebceDay = tmpTimeDifference / day;

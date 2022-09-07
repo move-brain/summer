@@ -1,3 +1,8 @@
+var app = getApp()
+
+
+const host = 'https://qiuwo.xyz'
+
 // custom-tab-bar/index.js
 Component({
     /**
@@ -15,7 +20,8 @@ Component({
         myfill: "myfill",
         home: "home",
         homefill: "homefill",
-        select: 0
+        select: 0,
+        mes_num: 0
     },
 
     /**
@@ -32,5 +38,5 @@ Component({
                 url: e.currentTarget.dataset.url,
             })
         }
-    }
+    },
 })

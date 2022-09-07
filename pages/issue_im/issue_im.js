@@ -1,5 +1,5 @@
 // pages/issue_im/issue_im.js
-const host = "http://127.0.0.1:8083"
+const host = "https://qiuwo.xyz"
 var { postrequest } = require('../../request')
 var { getrequest } = require('../../request')
 const { time } = require("../../request")
@@ -23,85 +23,21 @@ Page({
         })
     },
     open(e) {
-        console.log(e);
-        var imagelist = this.data.imagelist
-        var text = this.data.text
-        var post_id = this.data.post_id
-        var user_id = this.data.user_id
-        if (imagelist.length == 0) {
-            getrequest(host + '/wx_post/main_com', {
-                post_id,
-                user_id,
-                text
-            }).then(res => {
-                if (res.statusCode == 200) {
-                    console.log(res);
-                    var pages = getCurrentPages();
-                    var prevPage = pages[pages.length - 2];
-                    console.log(prevPage.data.main_com);
-                    var name = wx.getStorageSync('name')
-                    var head = wx.getStorageSync('headimage')
-                    var id = res.data.id
-                    var com_time = res.data.com_time
-                    com_time = time(com_time)
-                    var com = {
-                        id,
-                        com_time,
-                        head,
-                        image: imagelist,
-                        name,
-                        post_id,
-                        text,
-                        user_id
-                    }
-                    var main_com = prevPage.data.main_com
-                    main_com.unshift(com)
-                    var br_com = prevPage.data.br_com
-
-                    prevPage.setData({ // 将我们想要传递的参数在这里直接setData。上个页面就会执行这里的操作。
-                        main_com,
-                        br_com
-                    })
-                    wx.navigateBack({
-                        delta: 1 // 返回上一级页面。
-                    })
-                } else(
-                    wx.showToast({
-                        title: '请重试',
-                        icon: 'error'
-                    })
-                )
-
-
-
-
-                //prevPage 是获取上一个页面的js里面的pages的所有信息。 -2 是上一个页面，-3是上上个页面以此类推。
-                // var gather = this.data.gather
-                // var show = this.data.show
-                // var images = this.data.images
-                // images = gather[show]
-                // prevPage.setData({ // 将我们想要传递的参数在这里直接setData。上个页面就会执行这里的操作。
-                //     show
-                // })
-
-            })
-        } else {
-            wx.uploadFile({
-                filePath: imagelist[0],
-                name: 'image',
-                url: host + '/wx_post/main_com',
-                timeout: 100000,
-                header: {
-                    "content-type": "multipart/form-data"
-                },
-                formData: {
-                    text,
+        var islogin = app.userlogin.islogin
+        if (islogin) {
+            console.log(e);
+            var imagelist = this.data.imagelist
+            var text = this.data.text
+            var post_id = this.data.post_id
+            var user_id = this.data.user_id
+            var openid = wx.getStorageSync('openid')
+            if (imagelist.length == 0) {
+                getrequest(host + '/wx_post/main_com', {
                     post_id,
+                    openid,
+                    text,
                     user_id
-                },
-
-                complete: (res) => {
-                    console.log(res);
+                }).then(res => {
                     if (res.statusCode == 200) {
                         console.log(res);
                         var pages = getCurrentPages();
@@ -125,7 +61,6 @@ Page({
                         var main_com = prevPage.data.main_com
                         main_com.unshift(com)
                         var br_com = prevPage.data.br_com
-
                         prevPage.setData({ // 将我们想要传递的参数在这里直接setData。上个页面就会执行这里的操作。
                             main_com,
                             br_com
@@ -133,25 +68,75 @@ Page({
                         wx.navigateBack({
                             delta: 1 // 返回上一级页面。
                         })
-                    } else {
+                    } else(
                         wx.showToast({
                             title: '请重试',
                             icon: 'error'
                         })
+                    )
+                })
+            } else {
+                wx.uploadFile({
+                    filePath: imagelist[0],
+                    name: 'image',
+                    url: host + '/wx_post/main_com',
+                    timeout: 100000,
+                    header: {
+                        "content-type": "multipart/form-data"
+                    },
+                    formData: {
+                        text,
+                        openid,
+                        post_id,
+                        user_id
+                    },
+
+                    complete: (res) => {
+                        console.log(res);
+                        if (res.statusCode == 200) {
+                            console.log(res);
+                            var pages = getCurrentPages();
+                            var prevPage = pages[pages.length - 2];
+                            console.log(prevPage.data.main_com);
+                            var name = wx.getStorageSync('name')
+                            var head = wx.getStorageSync('headimage')
+                            var id = res.data.id
+                            var com_time = res.data.com_time
+                            com_time = time(com_time)
+                            var com = {
+                                id,
+                                com_time,
+                                head,
+                                image: imagelist,
+                                name,
+                                post_id,
+                                text,
+                                user_id
+                            }
+                            var main_com = prevPage.data.main_com
+                            main_com.unshift(com)
+                            var br_com = prevPage.data.br_com
+
+                            prevPage.setData({ // 将我们想要传递的参数在这里直接setData。上个页面就会执行这里的操作。
+                                main_com,
+                                br_com
+                            })
+                            wx.navigateBack({
+                                delta: 1 // 返回上一级页面。
+                            })
+                        } else {
+                            wx.showToast({
+                                title: '请重试',
+                                icon: 'error'
+                            })
+                        }
                     }
-
-
-
-                    // wx.hideLoading();
-
-                    // wx.showToast({
-                    //     title: '发布成功',
-                    //     icon: 'success'
-                    // })
-
-
-
-                }
+                })
+            }
+        } else {
+            wx.showToast({
+                title: '您还未登录',
+                icon: 'none'
             })
         }
 
@@ -208,13 +193,13 @@ Page({
     },
     DelImg(e) {
         wx.showModal({
-            title: '召唤师',
-            content: '确定要删除这段回忆吗？',
-            cancelText: '再看看',
-            confirmText: '再见',
+            title: '尊敬的吧主',
+            content: '确定要删除这张照片吗？',
+            cancelText: '再看看吧',
+            confirmText: '拜拜',
             success: res => {
                 if (res.confirm) {
-                    console.log('fsc');
+
                     this.setData({
                         imagelist: [],
                         isselectimage: false
@@ -228,14 +213,16 @@ Page({
      */
     onLoad(options) {
         console.log(options);
+        var name = options.name
+
         var post_id = options.post
         var user_id = options.user_id
         this.setData({
             post_id,
-            user_id
+            user_id,
+            name
         })
     },
-
     /**
      * 生命周期函数--监听页面初次渲染完成
      */

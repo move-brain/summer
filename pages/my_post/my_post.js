@@ -1,20 +1,23 @@
 // pages/my_post/my_post.js
+
 const { getrequest } = require("../../request");
 const app = getApp()
-const host = 'http://127.0.0.1:8083'
+const host = 'https://qiuwo.xyz'
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
+        winwidth: 0,
+        winheight: 0,
         imagelwh: [{}],
         videolwh: [{}],
         none: false,
         type: '',
-        not_posts: false
+        not_posts: false,
+        posts: []
     },
-
     order(e) {
         var openid = wx.getStorageSync('openid')
         if (e.detail.value) {
@@ -24,10 +27,12 @@ Page({
             }).then(res => {
                 if (res.data.id == 1) {
                     this.setData({
+                        type: '最新回复',
                         posts: res.data.posts
                     })
                 } else {
                     this.setData({
+
                         not_posts: true
                     })
                 }
@@ -38,10 +43,12 @@ Page({
             }).then(res => {
                 if (res.data.id == 1) {
                     this.setData({
+                        type: "最新发表",
                         posts: res.data.posts
                     })
                 } else {
                     this.setData({
+
                         not_posts: true
                     })
                 }
@@ -52,41 +59,42 @@ Page({
         var posts = this.data.posts
         console.log(e);
         var index = e.currentTarget.dataset.index
-        var TabCur = this.data.TabCur
-        posts[TabCur].splice(index, 1)
-        console.log(posts);
-        this.setData({
-            posts: posts
-        })
-    },
-    collect(e) {
-        console.log(e);
-        var posts = this.data.posts
-        var index = e.currentTarget.dataset.index
-        var islike = e.currentTarget.dataset.islike
 
-        var openid = wx.getStorageSync('openid')
-        getrequest(host + '/wx_post/iscollect', {
-            openid,
-            post_id: posts[index].id,
-            islike
-        }).then(res => {
-            console.log(res);
-            if (res.statusCode == 200) {
-                // posts[TabCur][index].is_like = !posts[TabCur][index].
-                posts[index].is_collect = !posts[index].is_collect
-                if (islike == 'true') {
-                    posts[index].collect_num--
+        var id = posts[index].id
+        wx.showModal({
+            content: "确认删除该帖？",
+            cancelTeaxt: "不忍心",
+            confirmText: "删了吧",
+            complete: com => {
+                console.log(com);
+                if (com.confirm) {
+                    getrequest(host + '/wx_post/de_post', {
+                        id,
+                    }).then(res => {
+                        if (res.statusCode == 200) {
+                            posts.splice(index, 1)
+                            this.setData({
+                                posts: posts
+                            })
+                            wx.showToast({
+                                title: '删除成功',
+                                icon: 'success'
+                            })
+                        } else {
+                            wx.showToast({
+                                title: '删除失败',
+                                icon: 'error'
+                            })
+                        }
+                    })
                 }
-                if (islike == 'false') {
-                    posts[index].collect_num++
-                }
-                this.setData({
-                    posts
-                })
             }
         })
+
+
+
     },
+
     like(e) {
         console.log(e);
         var posts = this.data.posts
@@ -97,6 +105,7 @@ Page({
         getrequest(host + '/wx_post/islike', {
             openid,
             post_id: posts[index].id,
+            user_id: posts[index].user_id,
             islike
         }).then(res => {
             console.log(res);
@@ -118,9 +127,10 @@ Page({
     look_posts(e) {
         console.log(e);
         var id = e.currentTarget.dataset.id
-        console.log(id);
+        var user_id = e.currentTarget.dataset.user_id
+
         wx.navigateTo({
-            url: '../posts/posts?post_id=' + id,
+            url: '../posts/posts?post_id=' + id + '&&user_id=' + user_id,
         })
     },
     lookimage(e) {
@@ -210,22 +220,27 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
+        this.setData({
+            winwidth: wx.getSystemInfoSync().windowWidth,
+            winheight: wx.getSystemInfoSync().windowHeight
+        })
         var openid = wx.getStorageSync('openid')
         getrequest(host + '/wx_post/get_newposts', {
             openid
         }).then(res => {
             if (res.data.id == 1) {
                 this.setData({
+                    type: '最新发表',
                     posts: res.data.posts
                 })
             } else {
                 this.setData({
+
                     not_posts: true
                 })
             }
         })
     },
-
     /**
      * 生命周期函数--监听页面初次渲染完成
      */

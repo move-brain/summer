@@ -1,5 +1,5 @@
 const { getrequest } = require("../../request");
-const host = "http://127.0.0.1:8083"
+const host = "https://qiuwo.xyz"
 
 // pages/like_collect/like_collect.js
 Page({
@@ -62,6 +62,7 @@ Page({
         getrequest(host + '/wx_post/islike', {
             openid,
             post_id: posts[index].id,
+            user_id: posts[index].user_id,
             islike
         }).then(res => {
             console.log(res);
@@ -83,9 +84,10 @@ Page({
     look_posts(e) {
         console.log(e);
         var id = e.currentTarget.dataset.id
-        console.log(id);
+        var user_id = e.currentTarget.dataset.user_id
+
         wx.navigateTo({
-            url: '../posts/posts?post_id=' + id,
+            url: '../posts/posts?post_id=' + id + '&&user_id=' + user_id,
         })
     },
     lookimage(e) {

@@ -8,6 +8,7 @@
     </view>
     <view   bindtap="select" data-url="../my/my"  class="action text-gray">
         <view class="cuIcon-{{select==1?myfill:my}}">
+          <view wx:if="{{mes_num}}" class="cu-tag badge"></view>
       </view>
       我的
     </view>

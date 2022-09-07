@@ -2,7 +2,7 @@
 var app = getApp()
 
 const getquest = require('../../request.js').getrequest
-const host = 'http://127.0.0.1:8083'
+const host = 'https://qiuwo.xyz'
 Page({
 
     /**
@@ -10,25 +10,48 @@ Page({
      */
     data: {
         headimage: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5qXSBaCJW5fBtc8gslwiNeahMGH2zu7hRv9uPao1ynkrG7LQWAWvTDvbQBBjD4GpoWT7B8G2f3CBOPnuyvTMiFU!/b&bo=yADIAAAAAAADByI!&rf=viewer_4",
-        name: "未登录"
-
+        name: "未登录",
+        mes_num: 0,
+        islogin: false
     },
     like_collect(e) {
-        console.log(e);
-        var type = e.currentTarget.dataset.type
-        wx.navigateTo({
-            url: '../like_collect/like_collect?type=' + type,
-        })
+        var islogin = this.data.islogin
+        if (islogin) {
+            console.log(e);
+            var type = e.currentTarget.dataset.type
+            wx.navigateTo({
+                url: '../like_collect/like_collect?type=' + type,
+            })
+        } else {
+            wx.showToast({
+                title: '您还未登录',
+                icon: 'none'
+            })
+        }
     },
     my_post(e) {
-        wx.navigateTo({
-            url: '../my_post/my_post',
-        })
+        if (this.data.islogin) {
+            wx.navigateTo({
+                url: '../my_post/my_post',
+            })
+        } else {
+            wx.showToast({
+                title: '您还未登录',
+                icon: 'none'
+            })
+        }
     },
     mod_my(e) {
-        wx.navigateTo({
-            url: '../mod_my/mod_my',
-        })
+        if (this.data.islogin) {
+            wx.navigateTo({
+                url: '../mod_my/mod_my',
+            })
+        } else {
+            wx.showToast({
+                title: '您还未登录',
+                icon: 'none'
+            })
+        }
     },
     isnologin(res) {
         return new Promise((resolve, reject) => {
@@ -57,10 +80,10 @@ Page({
                             getquest(host + '/wx_post/newuser', {
                                 code: res.code
                             }).then(res => {
+
                                 app.userlogin.islogin = true
-                                console.log(res);
                                 var openid = res.data.session.openid
-                                console.log(openid);
+
                                 wx.setStorageSync('openid', openid)
                                 getquest(host + '/wx_post/set_user', {
                                     openid,
@@ -91,6 +114,20 @@ Page({
         })
 
     },
+    get_mes: function(res) {
+        var openid = wx.getStorageSync('openid')
+
+        getquest(host + '/wx_post/mes_num', {
+            openid
+        }).then(res => {
+
+            if (res.statusCode == 200) {
+                this.setData({
+                    mes_num: res.data.mes_num
+                })
+            }
+        })
+    },
     /**
      * 生命周期函数--监听页面加载
      */
@@ -101,6 +138,9 @@ Page({
             console.log(888);
             wx.checkSession({
                 success: (res) => {
+                    this.setData({
+                        islogin: true
+                    })
                     getquest(host + '/wx_post/get_user', {
                             openid
                         }).then(res => {
@@ -114,7 +154,18 @@ Page({
                         })
                         // this.userlogin.openid = openid
                         // this.userlogin.islogin = true
-
+                    getquest(host + '/wx_post/mes_num', {
+                        openid
+                    }).then(res => {
+                        console.log(res);
+                        if (res.statusCode == 200) {
+                            console.log(res);
+                            this.setData({
+                                mes_num: res.data.mes_num
+                            })
+                            setInterval(this.get_mes, 3000)
+                        }
+                    })
                 },
                 fail: (res) => {
                     wx.showToast({
@@ -123,11 +174,21 @@ Page({
                         duration: 2000
                     })
                 },
-
             })
         }
     },
-
+    mes(e) {
+        if (this.data.islogin) {
+            wx.navigateTo({
+                url: '../mes/mes',
+            })
+        } else {
+            wx.showToast({
+                title: '您还未登录',
+                icon: 'none'
+            })
+        }
+    },
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
@@ -146,6 +207,21 @@ Page({
             this.getTabBar()) {
             this.getTabBar().setData({
                 select: 1
+            })
+        }
+        var openid = wx.getStorageSync('openid')
+        var islogin = this.data.islogin
+        if (islogin) {
+            getquest(host + '/wx_post/get_user', {
+                openid
+            }).then(res => {
+                this.setData({
+                        headimage: res.data.head,
+                        name: res.data.name
+                    })
+                    // console.log(res);
+                    // this.user.name = res.data.name
+                    // this.user.headimage = res.data.head
             })
         }
     },

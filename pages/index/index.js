@@ -6,7 +6,7 @@ const { time } = require("../../request")
 const { getrequest } = require("../../request");
 // 获取应用实例
 const app = getApp()
-const host = 'http://127.0.0.1:8083'
+const host = 'https://qiuwo.xyz'
 Page({
 
     data: {
@@ -55,14 +55,10 @@ Page({
 
 
     animage(e) {
-
-
         var index = e.currentTarget.dataset.index
-
         var imagelwh = this.data.imagelwh
         var TabCur = this.data.TabCur
         var viewwith = wx.getSystemInfoSync().windowWidth / 2
-
         if (e.detail.height < e.detail.width) {
             var viewheight = wx.getSystemInfoSync().windowHeight / 4
 
@@ -124,7 +120,7 @@ Page({
     },
     hdsearch(e) {
         var showsearch = this.data.showsearch
-        if (e.detail.scrollTop > 300) {
+        if (e.detail.scrollTop > 100) {
             this.setData({
                 showsearch: false
             })
@@ -146,26 +142,27 @@ Page({
         var islogin = app.userlogin.islogin
         var openid = app.userlogin.openid
         return new Promise((resolve, rejects) => {
-                if (TabCur > 0) {
-                    if (posts[TabCur] == null) {
-                        wx.showLoading({
-                            title: '客官稍等',
-                        })
-                        var list = this.data.list
-                        if (TabCur == 1) {
-                            var type = '视频'
-                        } else {
-                            var type = list[TabCur].text
-                        }
-                        var posts_data = this.data.posts_data
-                        posts_data[TabCur] = posts_data[TabCur]
-                        getrequest(host + '/wx_posts/sp_posts', {
-                            type,
-                            islogin,
-                            openid,
-                            posts_data: posts_data[TabCur]
-                        }).then(res => {
-                            posts[TabCur] = res.data
+            if (TabCur > 0) {
+                if (posts[TabCur] == null) {
+                    wx.showLoading({
+                        title: '客官稍等',
+                    })
+                    var list = this.data.list
+                    if (TabCur == 1) {
+                        var type = '视频'
+                    } else {
+                        var type = list[TabCur].text
+                    }
+                    var posts_data = this.data.posts_data
+                    posts_data[TabCur] = posts_data[TabCur]
+                    getrequest(host + '/wx_post/sp_posts', {
+                        type,
+                        islogin,
+                        openid,
+                        posts_data: posts_data[TabCur]
+                    }).then(res => {
+                        if (res.data.id == 1) {
+                            posts[TabCur] = res.data.posts
                             var se_tabcur = this.data.se_tabcur
                             se_tabcur[TabCur] = true
                             this.setData({
@@ -173,107 +170,65 @@ Page({
                                 se_tabcur,
                                 posts
                             })
-                            wx.hideLoading()
-                        })
-                    }
+                        }
+                        wx.hideLoading()
+                    })
                 }
+            }
 
-            })
-            // if (TabCur > 0) {
-            //     if (TabCur == 1) {
-            //         if (posts[TabCur] == null) {
-            //             wx.showToast({
-            //                 title: '正在加载',
-            //                 icon: 'loading'
-            //             })
-            //             wx.hideLoading();
-            //             var list = this.data.list
-            //             getrequest(host + '/wx_posts/sp_posts', {
-            //                 type: '视频',
-            //                 islogin,
-            //                 openid
-            //             }).then(res => {
-            //                 posts[TabCur] = res.data
-            //                 this.setData({
-            //                     posts,
-            //                     se_tabcur: TabCur
-            //                 })
-            //                 wx.hideLoading();
-            //             })
-            //         } else {
-            //             this.setData({
-            //                 se_tabcur: TabCur
-            //             })
-            //             wx.hideLoading();
-            //         }
-            //     } else {
-            //         if (posts[TabCur] == null) {
-            //             wx.showToast({
-            //                 title: '正在加载',
-            //                 icon: 'loading'
-            //             })
-            //             var list = this.data.list
-            //             getrequest(host + '/wx_posts/sp_posts', {
-            //                 type: list[TabCur].text,
-            //                 islogin,
-            //                 openid
-            //             }).then(res => {
-            //                 posts[TabCur] = res.data
-            //                 this.setData({
-            //                     posts,
-            //                     se_tabcur: TabCur
-            //                 })
-            //                 wx.hideLoading();
-            //             })
-            //         } else {
-            //             this.setData({
-            //                 se_tabcur: TabCur
-            //             })
-            //             wx.hideLoading();
-            //         }
-            //     }
-            // }
+        })
     },
     look_posts(e) {
         console.log(e);
         var id = e.currentTarget.dataset.id
+        var user_id = e.currentTarget.dataset.user_id
         console.log(id);
         wx.navigateTo({
-            url: '../posts/posts?post_id=' + id,
+            url: '../posts/posts?post_id=' + id + '&&user_id=' + user_id,
         })
     },
-    look_user(e) {
-        console.log(e + 'hdj');
-    },
     like(e) {
-
         var posts = this.data.posts
         var index = e.currentTarget.dataset.index
         var islike = e.currentTarget.dataset.islike
         var TabCur = this.data.TabCur
         var openid = wx.getStorageSync('openid')
-        getrequest(host + '/wx_post/islike', {
-            openid,
-            post_id: posts[TabCur][index].id,
-            islike
-        }).then(res => {
-            console.log(res);
-            if (res.statusCode == 200) {
-                // posts[TabCur][index].is_like = !posts[TabCur][index].is_like
-                for (var i in posts) {
-                    if (posts[i] != null) {
-                        for (var k in posts[i]) {
-                            if (posts[i][k].id == posts[TabCur][index].id) {
-                                posts[i][k].is_like = !posts[i][k].is_like
+        var islogin = app.userlogin.islogin
+        if (islogin) {
+            getrequest(host + '/wx_post/islike', {
+                openid,
+                post_id: posts[TabCur][index].id,
+                user_id: posts[TabCur][index].user_id,
+                islike
+            }).then(res => {
+                console.log(res);
+                if (res.statusCode == 200) {
+                    for (var i in posts) {
+                        if (posts[i] != null) {
+                            for (var k in posts[i]) {
+                                if (posts[i][k].id == posts[TabCur][index].id) {
+                                    posts[i][k].is_like = !posts[i][k].is_like
+                                    if (islike == 'true') {
+                                        posts[i][k].like_num--
+                                    } else {
+                                        posts[i][k].like_num++
+                                    }
+                                }
+
                             }
                         }
                     }
+                    this.setData({
+                        posts
+                    })
                 }
-                this.setData({
-                    posts
-                })
-            }
-        })
+            })
+        } else {
+            wx.showToast({
+                title: '请前往我的页面登录',
+                icon: 'none'
+            })
+        }
     },
     de_post(e) {
         var posts = this.data.posts
@@ -322,12 +277,13 @@ Page({
             var openid = wx.getStorageSync('openid')
             console.log(openid);
             var posts_data = this.data.posts_data
-            if (openid == ' ') {
+            if (openid == '') {
                 console.log(openid);
                 getrequest(host + '/wx_post/get_allpost', {
                     islogin: false,
                     posts_data: posts_data[0]
                 }).then(res => {
+                    console.log(res);
                     if (res.statusCode == 200) {
                         var posts = this.data.posts
                         posts[0] = res.data
@@ -337,6 +293,7 @@ Page({
                     } else { console.log(res) }
                 })
             } else {
+                console.log("cwcwc");
                 wx.checkSession({
                     success: (res) => {
                         console.log(88888);
@@ -345,6 +302,7 @@ Page({
                             islogin: true,
                             posts_data: posts_data[0]
                         }).then(res => {
+                            console.log(res);
                             if (res.statusCode == 200) {
                                 var posts = this.data.posts
                                 posts[0] = res.data
@@ -395,12 +353,14 @@ Page({
                 posts_data: posts_data[0]
             }).then(res => {
                 if (res.statusCode == 200) {
-                    var posts = this.data.posts
-                    posts[0] = posts[0].concat(res.data)
-                    this.setData({
-                        posts,
-                        posts_data
-                    })
+                    if (res.data.id == 1) {
+                        var posts = this.data.posts
+                        posts[0] = posts[0].concat(res.data)
+                        this.setData({
+                            posts,
+                            posts_data
+                        })
+                    }
                 }
 
             })
@@ -413,20 +373,25 @@ Page({
             } else {
                 var type = list[TabCur].text
             }
-            getrequest(host + '/wx_posts/sp_posts', {
+            getrequest(host + '/wx_post/sp_posts', {
                 type,
                 islogin,
                 openid,
                 posts_data: posts_data[TabCur]
             }).then(res => {
-                posts[TabCur] = posts[TabCur].concat(res.data)
-                this.setData({
-                    posts,
-                    posts_data
-                })
+                if (res.data.id == 1) {
+                    posts[TabCur] = posts[TabCur].concat(res.data)
+                    this.setData({
+                        posts,
+                        posts_data
+                    })
+                }
 
             })
 
         }
-    }
+    },
+    onPullDownRefresh: function() {
+        this.onLoad()
+    },
 })

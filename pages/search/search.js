@@ -1,4 +1,8 @@
 // pages/search/search.js
+const { getrequest } = require("../../request");
+// 获取应用实例
+const app = getApp()
+const host = 'https://qiuwo.xyz'
 Page({
 
     /**
@@ -6,22 +10,13 @@ Page({
      */
     data: {
         searchtext: "",
-        searchlist: ["hhhh", "哈哈哈哈", "谢谢正好看", "彼此", "hfdugfudghvcxhdcvuedghfugeufhweuibfuygeu9"],
-        list: [{
-            select: false,
-            text: " 太古十凶之一——鲲鹏，其遗巢惊现，就横陈在前方，那种惊心动魄的景象令人瞠目，随之而颤！"
-        }, {
-            select: false,
-            text: "太古十凶之一——鲲鹏，其遗巢惊现，就横陈在前方，那种惊心动魄的景象令人瞠目，随之而颤"
-        }, {
-            select: false,
-            text: "海面都红了，漂浮着众多尸体，各个种族的都有，喊杀震天，鲲鹏之无上宝术将出，各族精英尽出。"
-        }],
-        delete: false
+        searchlist: [],
+        deleted: false,
+
     },
     delete(e) {
         this.setData({
-            delete: !this.data.delete
+            deleted: !this.data.deleted
         })
     },
     delete__(e) {
@@ -32,40 +27,78 @@ Page({
         this.setData({
             searchlist
         })
+        wx.setStorageSync('searchlist', searchlist)
     },
     record(e) {
-
         this.setData({
             searchtext: e.detail.value
         })
     },
     search(e) {
         return new Promise((resolve, reject) => {
-            var list = this.data.list
-            var searchtext = this.data.searchtext
-            for (var index in list) {
-                var re = new RegExp(searchtext, "ig")
-                if (re.test(list[index].text)) {
-                    console.log(index);
-                    list[index].select = true
+                var searchtext = this.data.searchtext
+                wx.navigateTo({
+                    url: '../select/select?searchtext=' + searchtext,
+                })
+                var searchlist = this.data.searchlist
+                var same = 0
+                for (var i in searchlist) {
+                    if (searchlist[i] == searchtext) {
+                        same = 1;
+                        break;
+                    }
+                }
+                if (same == 0) {
+                    searchlist = searchlist.concat(searchtext)
+                    console.log(searchlist);
+                    wx.setStorageSync('searchlist', searchlist)
                     this.setData({
-                        list
+                        searchlist
                     })
                 }
-            }
-            resolve();
-        }).then(res => {
-            wx.navigateTo({
-                url: '../select/select',
+                // getrequest(host + '/wx_post/search', {
+                //         searchtext
+                //     }).then(res => {
+                //     })
+                // for (var index in list) {
+                //     var re = new RegExp(searchtext, "ig")
+                //     if (re.test(list[index].text)) {
+                //         console.log(index);
+                //         list[index].select = true
+                //         this.setData({
+                //             list
+                //         })
+                //     }
+                // }
+                resolve();
             })
+            // .then(res => {
+            //     // wx.navigateTo({
+            //     //     url: '../select/select',
+            //     // })
+            // })
+    },
+    fill_search(e) {
+        console.log(e);
+        var index = e.currentTarget.dataset.index
+        var searchlist = this.data.searchlist
+        var searchtext = this.data.searchtext
+        searchtext = searchlist[index]
+        this.setData({
+            searchtext
         })
     },
-
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-
+        var searchlist = wx.getStorageSync('searchlist')
+        console.log(searchlist);
+        if (searchlist) {
+            this.setData({
+                searchlist
+            })
+        }
     },
 
     /**

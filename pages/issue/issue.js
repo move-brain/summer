@@ -1,7 +1,8 @@
 const { getrequest } = require("../../request");
-const host = "http://127.0.0.1:8083"
+const host = "https://qiuwo.xyz"
     // pages/issue/issue.js
 const innerAudioContext = wx.createInnerAudioContext()
+var app = getApp()
 Page({
 
     /**
@@ -11,7 +12,7 @@ Page({
 
         modalName: "",
         select: [],
-        selected: [{ text: "生活分享", image: "../../icon/校园生活.png", disabled: false }, { text: "校园互助", image: "../../icon/合作.png", disabled: false }, { text: "避雷专区", image: "../../icon/材料指导.png", disabled: false }, { text: "游戏", image: "../../icon/游戏.png", disabled: false }, { text: "运动", image: "../../icon/羽毛球.png", disabled: false }, { text: "学习", image: "../../icon/学习.png", disabled: false }, { text: "玩梗", image: "../../icon/评论.png", disabled: false }],
+        selected: [{ text: "生活分享", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5m9U*NeyP*g5d16QjXsXyoamYfsYvSfsS72UmM62vOIX2GgBunm4dp2J1z8UEMOM3gYo4jHCzRBMtZf3XQ8kjHM!/mnull&bo=yADIAAAAAAADByI!&rf=photolist&t=5", disabled: false }, { text: "校园互助", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5m9U*NeyP*g5d16QjXsXyoacIJyy0FasKeVrYSjRtbuvau2coI.xuKHJ0noEGPjX6XuOA5BK.Ht.5MmGBfUp5E0!/mnull&bo=yADIAAAAAAADByI!&rf=photolist&t=5", disabled: false }, { text: "避雷专区", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5jFdhCE2HDgOhDFUpPSO1iKLrJBOGfX8GhZNz.Bzh5PW75k4PROyA84U*g3SRDtSn6l*mrHO5GWrPkKMz4MArh0!/mnull&bo=5wDIAAAAAAADBw0!&rf=photolist&t=5", disabled: false }, { text: "游戏", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5m9U*NeyP*g5d16QjXsXyob8WcU5bTuvIHb071VK*KQddbZLAAsOmHxfxo95rgKU4aazyXLEgLVw9mAhTx4bXwk!/mnull&bo=yADIAAAAAAADByI!&rf=photolist&t=5", disabled: false }, { text: "运动", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5jFdhCE2HDgOhDFUpPSO1iK9kXtl4V9TGHtAEpFOWbt6yGSmvHfHWpKokaS*WgTJhI3E5qqyr2hNtV50hPovkJA!/mnull&bo=yADIAAAAAAADByI!&rf=photolist&t=5", disabled: false }, { text: "学习", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5jFdhCE2HDgOhDFUpPSO1iLf4bfqH*OCrxWUlSHcFvsge9RxMuZQNMC3Ui2ieHV18eICv1IRvcxFD1poo5elInM!/mnull&bo=AAHIAAAAAAADB.s!&rf=photolist&t=5", disabled: false }, { text: "玩梗", image: "http://m.qpic.cn/psc?/V50Fs1Xr3RvV6z1kISRj26VmXM3qPEMP/ruAMsa53pVQWN7FLK88i5jFdhCE2HDgOhDFUpPSO1iKf3RCEmpwmf5jqZqc4p.H7othXmLn9OFLV37ygB2Oq9t8jDRNfJZB50F0ekY.z2Ww!/mnull&bo=yADIAAAAAAADByI!&rf=photolist&t=5", disabled: false }],
         title: '',
         iosDialog1: false,
         imagelist: [],
@@ -60,7 +61,7 @@ Page({
                     i++;
 
                     if (i == list.length) {
-                        wx.hideLoading();
+                        wx.hideToast()
                         resolve();
                         wx.showToast({
                             title: '发布成功',
@@ -85,77 +86,86 @@ Page({
         })
     },
     open(e) {
-        console.log(e);
-        var title = this.data.title
-        console.log(title);
-        if (title.length < 5) {
-            wx.showToast({
-                title: '标题字数过少',
-                icon: 'error'
-            })
-            return 0;
-        } else {
-            var select = this.data.select
-            if (select.length == 0) {
+        var islogin = app.userlogin.islogin
+        if (islogin) {
+            console.log(e);
+            var title = this.data.title
+            console.log(title);
+            if (title.length < 5) {
                 wx.showToast({
-                    title: '请选择版块',
+                    title: '标题字数过少',
                     icon: 'error'
                 })
+                return 0;
             } else {
-                var openid = wx.getStorageSync('openid')
-                console.log(openid);
                 var select = this.data.select
-                var type = 'url_image'
-                if (this.data.isselectvideo) {
-                    type = 'url_videos'
-                }
-                wx.showToast({
-                    title: '正在发布',
-                    icon: 'loading'
-                })
-                getrequest(host + '/wx_post/set_post', {
-                    select,
-                    text: this.data.text,
-                    title: this.data.title,
-                    type: type,
-                    openid: openid
-                }).then(res => {
-                    console.log(res);
-                    if (res.statusCode != 200) {
-                        wx.hideLoading();
-                        wx.showToast({
-                            title: '发布失败',
-                            icon: 'error'
-                        })
-                        return 0;
-                    } else {
-
-                        if (this.data.isselectimage == true) {
-                            var list = this.data.imagelist
-
-                        } else {
-                            var list = this.data.videolist
-
-                        }
-                        if (list.length == 0) {
+                if (select.length == 0) {
+                    wx.showToast({
+                        title: '请选择版块',
+                        icon: 'error'
+                    })
+                } else {
+                    var openid = wx.getStorageSync('openid')
+                    console.log(openid);
+                    var select = this.data.select
+                    var type = 'url_image'
+                    if (this.data.isselectvideo) {
+                        type = 'url_videos'
+                    }
+                    wx.showToast({
+                        title: '正在发布',
+                        icon: 'loading',
+                        duration: 10000
+                    })
+                    getrequest(host + '/wx_post/set_post', {
+                        select,
+                        text: this.data.text,
+                        title: this.data.title,
+                        type: type,
+                        openid: openid
+                    }).then(res => {
+                        console.log(res);
+                        if (res.statusCode != 200) {
                             wx.hideLoading();
                             wx.showToast({
-                                title: '发布成功',
-                                icon: 'success'
+                                title: '发布失败',
+                                icon: 'error'
                             })
-                            setTimeout(this.timer, 1000)
                             return 0;
                         } else {
-                            var i = 0
-                            this.up_images(list, i, res.data.id)
+
+                            if (this.data.isselectimage == true) {
+                                var list = this.data.imagelist
+
+                            } else {
+                                var list = this.data.videolist
+
+                            }
+                            if (list.length == 0) {
+                                wx.hideLoading();
+                                wx.showToast({
+                                    title: '发布成功',
+                                    icon: 'success'
+                                })
+                                setTimeout(this.timer, 1000)
+                                return 0;
+                            } else {
+                                var i = 0
+                                this.up_images(list, i, res.data.id)
+                            }
+
+
                         }
 
+                    })
+                }
 
-                    }
-
-                })
             }
-
+        } else {
+            wx.showToast({
+                title: '还未登录',
+                icon: 'none'
+            })
         }
 
     },
@@ -287,49 +297,6 @@ Page({
         })
 
     },
-
-    // Chooseaudio(e) {
-    //     wx.chooseMessageFile({
-    //         count: 1,
-    //         type: "file",
-    //         success: (res) => {
-    //             this.setData({
-    //                 audio: res.tempFiles[0].path
-    //             })
-    //             var audio = this.data.audio
-    //             console.log(audio);
-    //             innerAudioContext.autoplay = true
-    //             innerAudioContext.src = audio
-    //             innerAudioContext.onPlay(() => {
-    //                 console.log('开始播放')
-    //             })
-    //             innerAudioContext.onError((res) => {
-    //                 console.log(res.errMsg)
-    //                 console.log(res.errCode)
-    //             })
-
-    //             innerAudioContext.onPause(
-    //                 () => {
-    //                     console.log('停止播放')
-    //                 }
-    //             )
-    //         },
-    //         complete: (com) => {
-    //             console.log(com);
-    //             if (com.errMsg == "chooseMessageFile:ok") {
-    //                 this.setData({
-    //                     isselectaudio: true
-    //                 })
-    //             }
-    //         }
-    //     })
-    // },
-    // audioPlay: function() {
-    //     innerAudioContext.play()
-    // },
-    // audioPause: function() {
-    //     innerAudioContext.pause()
-    // },
     ViewImage(e) {
         wx.previewImage({
             urls: this.data.imagelist,

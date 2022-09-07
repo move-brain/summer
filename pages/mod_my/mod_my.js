@@ -1,7 +1,7 @@
 var app = getApp()
 
 const getquest = require('../../request.js').getrequest
-const host = 'http://127.0.0.1:8083'
+const host = 'https://qiuwo.xyz'
 const { postrequest } = require('../../request')
     // pages/mod_my/mod_my.js
 Page({
